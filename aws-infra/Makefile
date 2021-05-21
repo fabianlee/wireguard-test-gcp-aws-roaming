@@ -17,6 +17,7 @@ create-keypair:
 
 destroy:
 	$(TF) destroy -force -auto-approve
+	ssh-keygen -f ~/.ssh/known_hosts -R 172.16.2.129
 	##rm terraform.tfstate*
 
 output:

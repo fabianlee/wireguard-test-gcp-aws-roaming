@@ -16,49 +16,16 @@ data "aws_ami" "my_ami" {
     name   = "name"
     values = [ var.ami_image_name ]
   }
-
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
   }
-
   owners = ["099720109477"] # Canonical
-}
-
-resource "aws_vpc" "my_vpc" {
-  cidr_block = var.vpc_cidr
-
-  tags = {
-    Name = "vpc_test"
-  }
-}
-
-resource "aws_subnet" "public_subnet" {
-  #name = not supported
-  vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = var.subnet_cidr
-
-  tags = {
-    Name = "subnet_public"
-  }
-}
-resource "aws_subnet" "private_subnet" {
-  #name = not supported
-  vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = var.private_subnet_cidr
-
-  map_public_ip_on_launch = false
-
-  tags = {
-    Name = "subnet_private"
-  }
 }
 
 
 # public wireguard server
 resource "aws_instance" "wgserver" {
-  depends_on = [ aws_internet_gateway.my_gateway ]
- 
   #name = not supported
   ami = data.aws_ami.my_ami.id
   instance_type = var.ami_image_type
@@ -74,11 +41,10 @@ resource "aws_instance" "wgserver" {
   tags = {
     Name = "aws-ubuntu-pub-wg"
   }
-  # this works OK, it does set check to false
-  # https://stackoverflow.com/questions/57504230/source-dest-check-in-aws-launch-configuration-in-terraform
+  # Because this is a NAT server, need to disable source/dest check for VM
   source_dest_check = false
 
-  # startup script
+  # example of local file startup script
   user_data = file("${path.module}/startup.sh")
 
   provisioner "remote-exec" {
@@ -94,11 +60,11 @@ resource "aws_instance" "wgserver" {
     }
   }
 
+  depends_on = [ aws_internet_gateway.my_gateway ]
 }
 
-# internal apache web server
+# private apache web server
 resource "aws_instance" "web" {
-
   #name = not supported
   ami = data.aws_ami.my_ami.id
   instance_type = var.ami_image_type
@@ -112,7 +78,7 @@ resource "aws_instance" "web" {
 
   vpc_security_group_ids = [ aws_security_group.web_sg.id ]
 
-  # startup script
+  # example of inline startup script
   # https://dev.to/liptanbiswas/how-to-put-variable-in-terraform-start-up-script-2i64
   user_data = <<EOF
 #!/bin/bash
@@ -125,7 +91,6 @@ EOF
 
   # wait till route change done so we have stable outside connection
   depends_on = [ aws_internet_gateway.my_gateway ]
-
 }
 
 

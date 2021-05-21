@@ -36,3 +36,11 @@ cd ..
 # replaces gcp
 sed -i "s/{gcp-ubuntu-pub-wg}/$gcp_bastion/" ansible_inventory
 sed -i "s/{gcp-ubuntu-pub-wg}/$gcp_bastion/" group_vars/gcp_bastion
+
+
+
+# clear any previous key authorizations from these bastions
+# to avoid key errors
+ssh-keygen -f ~/.ssh/known_hosts -R $aws_bastion
+ssh-keygen -f ~/.ssh/known_hosts -R $gcp_bastion
+

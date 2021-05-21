@@ -44,7 +44,8 @@ resource "google_compute_firewall" "web-firewall" {
     protocol = "icmp"
   }
 
-  // Allow traffic from everywhere to instances with tag
+  // traffic could come from public subnet or wireguard cidr block
+  // we will just be wide here
   source_ranges = ["0.0.0.0/0"]
   target_tags   = ["web-server"]
 }

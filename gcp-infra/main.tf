@@ -110,7 +110,7 @@ resource "google_compute_instance" "wgserver" {
   tags = ["wg-server"]
 }
 
-# all private wireguard traffic goes to public instance
+# all private wireguard traffic goes to public wireguard instance for forwarding
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_route
 resource "google_compute_route" "other_route" {
   depends_on = [google_compute_instance.wgserver]
@@ -120,6 +120,16 @@ resource "google_compute_route" "other_route" {
   network     = google_compute_network.wg_network.name
   next_hop_instance = google_compute_instance.wgserver.self_link
   priority    = 100
+}
+# all traffic to other VPC goes to public wireguard instance for forwarding
+resource "google_compute_route" "other_vpc_route" {
+  depends_on = [google_compute_instance.wgserver]
+
+  name        = "route-other-vpc-to-public-instance"
+  dest_range  = var.other_vpc_cidr
+  network     = google_compute_network.wg_network.name
+  next_hop_instance = google_compute_instance.wgserver.self_link
+  priority    = 200
 }
 
 resource "google_compute_instance" "web" {

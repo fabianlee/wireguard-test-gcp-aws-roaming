@@ -36,7 +36,7 @@ resource "aws_route" "my_default_route" {
   gateway_id = aws_internet_gateway.my_gateway.id
 }
 
-# we don't need this with wireguard
+# we don't need this for wireguard
 #resource "aws_route" "my_route_othervpc" {
 #  route_table_id = aws_route_table.my_routetable.id
 #  destination_cidr_block = var.other_vpc_cidr
@@ -66,8 +66,15 @@ resource "aws_route" "private_default_route" {
 }
 resource "aws_route" "wireguard_route" {
   route_table_id = aws_route_table.private_routetable.id
-  # routes wireguard CIDR to wireguard instance
+  # routes wireguard CIDR to public wireguard instance for forwarding
+  # actually links to network interface if you look at aws routing table
   destination_cidr_block = var.wireguard_cidr
+  instance_id = aws_instance.wgserver.id
+}
+resource "aws_route" "othervpc_route" {
+  route_table_id = aws_route_table.private_routetable.id
+  # routes other VPC to public wireguard instance for forwarding
+  destination_cidr_block = var.other_vpc_cidr
   instance_id = aws_instance.wgserver.id
 }
 resource "aws_route_table_association" "private_routetable_assoc" {

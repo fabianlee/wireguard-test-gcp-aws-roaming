@@ -78,6 +78,9 @@ resource "aws_instance" "wgserver" {
   # https://stackoverflow.com/questions/57504230/source-dest-check-in-aws-launch-configuration-in-terraform
   source_dest_check = false
 
+  # startup script
+  user_data = file("${path.module}/startup.sh")
+
   provisioner "remote-exec" {
     inline = [
       "sleep 15 && sudo apt-get update -q"
@@ -108,6 +111,13 @@ resource "aws_instance" "web" {
   associate_public_ip_address = false
 
   vpc_security_group_ids = [ aws_security_group.web_sg.id ]
+
+  # startup script
+  # https://dev.to/liptanbiswas/how-to-put-variable-in-terraform-start-up-script-2i64
+  user_data = <<EOF
+#!/bin/bash
+echo test user_data | sudo tee /tmp/user_data.log
+EOF
 
   tags = {
     Name = "aws-ubuntu-priv-web"

@@ -1,0 +1,69 @@
+---
+
+- name: OS swappiness
+  sysctl:
+    name: vm.swappiness
+    value: '5'
+    sysctl_set: true
+    state: present
+
+- name: soft limit for nofile
+  pam_limits:
+    domain: '*'
+    limit_type: soft
+    limit_item: nofile
+    value: "{{ limit_nofile | int }}"
+
+- name: hard limit for nofile
+  pam_limits:
+    domain: '*'
+    limit_type: hard
+    limit_item: nofile
+    value: "{{ limit_nofile | int }}"
+
+- name: set swapoff
+  shell: swapoff -a
+
+- name: set swapoff permanently
+  replace:
+    path: /etc/fstab
+    regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+    replace: '#\1\2\3swap\4'
+    backup: yes
+
+- name: update editor preferences, Ubuntu
+  command: /usr/bin/update-alternatives --set editor /usr/bin/vim.basic
+  register: command_result
+  changed_when: "command_result.stdout != ''"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+#- debug: msg="{{command_result}}"
+
+#- name: update python preferences, Ubuntu
+#  command: update-alternatives --install /usr/bin/python python /usr/bin/python3 20
+#  register: command_result
+#  changed_when: "command_result.stdout != ''"
+#  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+#- debug: msg="{{command_result}}"
+
+- name: vimrc skeleton
+  copy:
+    dest: /etc/skel/.vimrc
+    content: |
+      colorscheme torte
+      syntax on
+      set paste
+      set ruler
+      autocmd FileType python setlocal ts=4 sts=4 sw=4 expandtab number autoindent
+      autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab autoindent
+      set foldenable
+      set foldlevelstart=20
+      set foldmethod=indent
+      nnoremap <space> za
+
+- name: copy vimrc to ubuntu user
+  copy:
+    src: /etc/skel/.vimrc
+    dest: /home/ubuntu/.vimrc
+    remote_src: true
+    owner: ubuntu
+    group: ubuntu

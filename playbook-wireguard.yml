@@ -1,0 +1,25 @@
+---
+
+- hosts: all
+  gather_facts: yes
+  become: yes
+
+  # most vars are coming from 'group_vars/' directory
+  vars:
+    wireguard_cidr: 10.0.14.0/24
+
+  tasks:
+
+    - name: install local packages needed for ipaddr jinja2 filter
+      delegate_to: localhost
+      become: true
+      apt:
+        pkg:
+        - python-netaddr # for ipaddr jinja2 filter used below
+        state: present
+
+
+  roles:
+    - { role: prereq }
+    - { role: wireguard, tags: ["wg"], when: "'wg' in group_names"  }
+    - { role: apache }

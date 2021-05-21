@@ -1,0 +1,27 @@
+---
+
+- name: Find the wireguard server
+  set_fact:
+    wireguard_server: "{{ (groups['wgserver']|sort)[0] }}"
+
+- name: from wg client, add server peer to wg0.conf
+  blockinfile:
+    state: present
+    dest: /etc/wireguard/wg0.conf
+    marker_begin: "BEGIN site-to-site server peer"
+    marker_end: "END site-to-site server peer"
+    insertafter: EOF
+    content: |
+      [Peer]
+      PublicKey = {{ hostvars[ wireguard_server ].wireguard_publickey }}
+      Endpoint = {{ hostvars[ wireguard_server ].ansible_host }}:51820
+      AllowedIPs = {{ allowed_ips }}
+  register: added_peer
+
+- name: dynamically add server peer
+  command:
+    cmd: /usr/bin/wg set wg0 peer '{{ hostvars[ wireguard_server ].wireguard_publickey }}' endpoint {{ hostvars[ wireguard_server ].ansible_host }}:51820 allowed-ips {{ allowed_ips }}
+  when: added_peer.changed
+  register: stdout
+- debug: msg="{{stdout.stdout_lines}}"
+  when: added_peer.changed

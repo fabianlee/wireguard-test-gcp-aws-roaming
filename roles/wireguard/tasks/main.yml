@@ -1,0 +1,22 @@
+---
+
+- debug: msg="{{group_names}}"
+- debug: msg="{{ansible_kernel}}"
+
+- name: wireguard prereq
+  import_tasks: prereq.yml
+
+- name: wireguard packages
+  import_tasks: packages.yml
+
+- name: wireguard install
+  import_tasks: install.yml
+
+- name: wireguard client configure
+  import_tasks: client.yml
+  when: "'wgclient' in group_names"
+
+- name: wireguard server configure
+  import_tasks: server.yml
+  when: "'wgserver' in group_names"
+

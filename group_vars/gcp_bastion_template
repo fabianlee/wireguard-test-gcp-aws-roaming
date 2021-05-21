@@ -1,0 +1,1 @@
+ansible_ssh_common_args: "-o ProxyCommand=\"ssh -q ubuntu@{gcp-ubuntu-pub-wg} -o IdentityFile=./ansible_rsa -o Port=22 -W %h:%p\""

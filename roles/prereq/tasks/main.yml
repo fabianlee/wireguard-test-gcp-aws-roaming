@@ -1,0 +1,7 @@
+---
+
+- name: install packages
+  import_tasks: packages.yml
+
+- name: ubuntu specific tasks
+  import_tasks: ubuntu.yml

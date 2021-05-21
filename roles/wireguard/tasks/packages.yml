@@ -1,0 +1,13 @@
+---
+
+- name: install wireguard packages
+  apt:
+    pkg:
+    - wireguard
+    - iptables
+    - resolvconf
+    - linux-headers-generic 
+    state: present
+    update_cache: true
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+

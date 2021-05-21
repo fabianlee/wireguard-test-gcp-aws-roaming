@@ -1,0 +1,3 @@
+ansible_ssh_common_args: "-o ProxyCommand=\"ssh -q ubuntu@{aws-ubuntu-pub-wg} -o IdentityFile=./ansible_rsa -o Port=22 -W %h:%p\""
+# did not seem to need -o StrictHostKeyChecking=no
+# and IdentityFile did not need to be at ~/.ssh/ansible_rsa, ok in current directory

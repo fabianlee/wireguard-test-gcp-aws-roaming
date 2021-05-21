@@ -1,0 +1,15 @@
+# keys
+id_rsa*
+ansible_rsa*
+
+# service account keys
+*.json
+
+# generated
+ansible_inventory
+
+# terraform files
+.terraform
+*.backup
+*.hcl
+*.tfstate

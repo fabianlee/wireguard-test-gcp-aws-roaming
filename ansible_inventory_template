@@ -1,0 +1,34 @@
+# aliases
+aws-ubuntu-pub-wg ansible_host={aws-ubuntu-pub-wg}
+aws-ubuntu-priv-web ansible_host=172.16.2.129
+
+gcp-ubuntu-pub-wg ansible_host={gcp-ubuntu-pub-wg}
+gcp-ubuntu-priv-web ansible_host=172.17.2.129
+
+# all wireguard
+[wg]
+aws-ubuntu-pub-wg
+gcp-ubuntu-pub-wg
+
+# wireguard server
+[wgserver]
+aws-ubuntu-pub-wg
+
+# wireguard client
+[wgclient]
+gcp-ubuntu-pub-wg
+
+[apache2]
+aws-ubuntu-priv-web
+gcp-ubuntu-priv-web
+
+# hosts without public ssh access need bastion
+[aws_bastion]
+aws-ubuntu-priv-web
+[gcp_bastion]
+gcp-ubuntu-priv-web
+
+[all:vars]
+ansible_user=ubuntu
+#ansible_ssh_pass=*****
+ansible_ssh_private_key_file = ./ansible_rsa

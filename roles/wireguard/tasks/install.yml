@@ -1,0 +1,101 @@
+---
+
+- name: ensure wireguard module loaded
+  shell:
+    cmd: modprobe wireguard && lsmod | grep wireguard
+
+- name: generate wireguard public private keypair
+  shell:
+    cmd: wg genkey | tee privatekey | wg pubkey > publickey
+    chdir: /home/ubuntu
+    creates: "/home/ubuntu/publickey"
+#  register: keypair_created
+#- debug: msg="{{keypair_created}}"
+
+- name: change permissions on wg keypair
+  file:
+    path: "{{item}}"
+    owner: ubuntu
+    group: ubuntu
+    mode: '0750'
+  loop:
+    - /home/ubuntu/publickey
+    - /home/ubuntu/privatekey
+
+- name: get public key
+  fetch:
+    src: /home/ubuntu/publickey
+    dest: /tmp/wg-publickey-{{inventory_hostname}}
+    flat: yes
+- name: get private key
+  fetch:
+    src: /home/ubuntu/privatekey
+    dest: /tmp/wg-privatekey-{{inventory_hostname}}
+    flat: yes
+
+- name: make public key a fact
+  set_fact:
+    wireguard_publickey: "{{ lookup('file','/tmp/wg-publickey-' + inventory_hostname) }}"
+- debug: msg="{{wireguard_publickey}}"
+- name: make private key a fact
+  set_fact:
+    wireguard_privatekey: "{{ lookup('file','/tmp/wg-privatekey-' + inventory_hostname ) }}"
+- debug: msg="{{wireguard_privatekey}}"
+
+- name: create wireguard conf directory
+  file:
+    state: directory
+    path: "/etc/wireguard"
+    mode: '0755'
+    force: false # will only place if file does not exist
+
+- name: create wireguard conf
+  template:
+    src: wg0.conf
+    dest: /etc/wireguard/wg0.conf
+    mode: '0750' # wg-quick strip will warn if world permisisons exist
+    force: false # do not overwrite if it exists already
+
+- name: wireguard firewall port open
+  ufw:
+    rule: allow
+    port: '51820'
+    proto: udp
+
+#
+# not necessary for installation
+# but good for validation when doing manual installs
+#
+#- name: create wg0 interface
+#  command: wg-quick up wg0
+#  register: stdout
+#- debug: msg="{{stdout.stdout_lines}}"
+#
+#- name: tear down wg0 interface
+#  command: wg-quick down wg0
+#  register: stdout
+#- debug: msg="{{stdout.stdout_lines}}"
+
+- name: wireguard systemd service
+  systemd:
+    name: wg-quick@wg0
+    enabled: yes
+    state: started
+
+- name: wireguard show status
+  command: wg show
+  register: stdout
+- debug: msg="{{stdout.stdout_lines}}"
+
+- name: wireguard systemd show status
+  command: systemctl status wg-quick@wg0 --no-pager -l
+  register: stdout
+- debug: msg="{{stdout.stdout_lines}}"
+
+- name: add route to other site through wg0 interface
+  command: ip route add {{other_site_cidr}} via 0.0.0.0 dev wg0
+  register: stdout
+- debug: msg="{{stdout.stdout_lines}}"
+
+
+

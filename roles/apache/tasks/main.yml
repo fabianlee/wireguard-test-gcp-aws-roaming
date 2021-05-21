@@ -1,0 +1,31 @@
+---
+
+- name: install apache packages
+  apt:
+    pkg:
+    - apache2
+    state: present
+    update_cache: true
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: make public key a variable so it can be used in index.html
+  slurp:
+    src: /home/ubuntu/publickey
+  register: wireguard_publickey
+  when: "'wg' in group_names"
+
+- name: index html page for wireguard servers with public and private IP
+  copy:
+    dest: /var/www/html/index.html
+    mode: '0666'
+    content: |
+      Hello from public IP {{ hostvars[inventory_hostname]['ansible_host'] }} on {{provider}} with private IP {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} with wireguard public key {{ wireguard_publickey['content'] | b64decode }}
+  when: "'wg' in group_names"
+
+- name: index html page for private vm instances
+  copy:
+    dest: /var/www/html/index.html
+    mode: '0666'
+    content: |
+      Hello from private IP {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} on {{provider}}
+  when: "'apache2' in group_names"

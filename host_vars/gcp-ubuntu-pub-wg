@@ -1,0 +1,4 @@
+provider: gcp
+wireguard_address: 10.0.14.4/24
+allowed_ips: 10.0.14.3/32, 172.16.0.0/16
+other_site_cidr: 172.16.0.0/16

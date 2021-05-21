@@ -92,10 +92,13 @@
   register: stdout
 - debug: msg="{{stdout.stdout_lines}}"
 
-- name: add route to other site through wg0 interface
-  command: ip route add {{other_site_cidr}} via 0.0.0.0 dev wg0
-  register: stdout
-- debug: msg="{{stdout.stdout_lines}}"
+# 
+# route will be added by wireguard as long as it listed in the AllowedIPs
+#
+#- name: add route to other site through wg0 interface
+#  command: ip route add {{other_site_cidr}} via 0.0.0.0 dev wg0
+#  register: stdout
+#- debug: msg="{{stdout.stdout_lines}}"
 
 
 

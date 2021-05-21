@@ -7,10 +7,15 @@ apply: create-keypair serviceaccount-prereq
 	cd aws-infra && make
 	cd gcp-infra && make
 
-## output variables from build
+## output variables from infra build
 output:
 	cd aws-infra && make output
 	cd gcp-infra && make output
+
+## destroy all infra
+destroy:
+	cd aws-infra && make destroy
+	cd gcp-infra && make destroy
 
 ## public/private keypair for ssh login to vms
 create-keypair:

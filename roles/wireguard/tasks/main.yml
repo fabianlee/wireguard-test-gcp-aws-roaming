@@ -19,4 +19,3 @@
 - name: wireguard server configure
   import_tasks: server.yml
   when: "'wgserver' in group_names"
-

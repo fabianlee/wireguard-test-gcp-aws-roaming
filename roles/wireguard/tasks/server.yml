@@ -20,8 +20,10 @@
 
 - name: dynamically add client peer
   command:
-    cmd: wg set wg0 peer '{{ hostvars[ wireguard_client ].wireguard_publickey }}' endpoint {{ hostvars[ wireguard_client ].ansible_host }}:51820 allowed-ips {{ allowed_ips }}
+    cmd: wg set wg0 peer '{{ hostvars[ wireguard_client ].wireguard_publickey }}' endpoint {{ hostvars[ wireguard_client ].ansible_host }}:51820 allowed-ips '{{ allowed_ips }}'
   when: added_peer.changed
   register: stdout
+  # restart service at end of playbook
+  notify: restart wireguard
 - debug: msg="{{stdout.stdout_lines}}"
   when: added_peer.changed

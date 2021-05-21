@@ -45,7 +45,7 @@ resource "google_compute_firewall" "web-firewall" {
   }
 
   // Allow traffic from everywhere to instances with tag
-  source_ranges = [var.cidr_block]
+  source_ranges = ["0.0.0.0/0"]
   target_tags   = ["web-server"]
 }
 

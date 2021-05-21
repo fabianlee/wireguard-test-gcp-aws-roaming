@@ -13,3 +13,4 @@ ansible_inventory
 *.backup
 *.hcl
 *.tfstate
+*.lock.info

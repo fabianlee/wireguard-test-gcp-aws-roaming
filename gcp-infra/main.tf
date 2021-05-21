@@ -118,7 +118,7 @@ resource "google_compute_route" "other_route" {
   name        = "route-wg-network-to-public-instance"
   dest_range  = var.wireguard_cidr
   network     = google_compute_network.wg_network.name
-  next_hop_instance = google_compute_instance.self_link
+  next_hop_instance = google_compute_instance.wgserver.self_link
   priority    = 100
 }
 

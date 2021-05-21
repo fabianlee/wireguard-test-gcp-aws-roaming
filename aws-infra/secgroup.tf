@@ -37,7 +37,7 @@ resource "aws_route" "my_default_route" {
 }
 
 # we don't need this with wireguard
-#resource "aws_route" "my_router_othervpc" {
+#resource "aws_route" "my_route_othervpc" {
 #  route_table_id = aws_route_table.my_routetable.id
 #  destination_cidr_block = var.other_vpc_cidr
 #

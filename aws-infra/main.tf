@@ -114,7 +114,7 @@ resource "aws_instance" "web" {
   }
 
   # wait till route change done so we have stable outside connection
-  depends_on = [ aws_internet_gateway.my_gateway,aws_route.my_router_othervpc ]
+  depends_on = [ aws_internet_gateway.my_gateway ]
 
 }
 

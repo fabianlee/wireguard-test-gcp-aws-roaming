@@ -54,6 +54,12 @@ resource "aws_route_table" "my_routetable" {
   #name = not supported
   vpc_id = aws_vpc.my_vpc.id
 
+  # if using ipv6, would need egress only igw
+  #route {
+  #  ipv6_cidr_block        = "::/0"
+  #  egress_only_gateway_id = "${aws_egress_only_internet_gateway.foo.id}"
+  #}
+
   tags = {
     Name = "rtable_test"
   }

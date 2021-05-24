@@ -18,7 +18,7 @@ provider "aws" {
 
   // instead of aws access and secret keys, use file format that comes from 'aws configure'
   shared_credentials_file = "~/.aws/credentials"
-  profile = "default"
+  #profile = "default"
 
   region = var.aws_region
 }

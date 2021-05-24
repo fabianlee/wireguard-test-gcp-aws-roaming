@@ -18,8 +18,7 @@
         - python-netaddr # for ipaddr jinja2 filter used below
         state: present
 
-
   roles:
     - { role: prereq }
-    - { role: wireguard, tags: ["wg"], when: "'wg' in group_names"  }
+    - { role: wireguard, when: "'wg' in group_names"  }
     - { role: apache }

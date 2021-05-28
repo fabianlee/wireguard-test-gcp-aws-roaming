@@ -5,7 +5,7 @@ resource "google_compute_network" "wg_network" {
 }
 
 resource "google_compute_subnetwork" "wg_subnetwork" {
-  #provider      = google-beta
+  provider      = google-beta
 
   name          = "wg-subnetwork"
   ip_cidr_range = var.cidr_block
@@ -18,13 +18,13 @@ resource "google_compute_subnetwork" "wg_subnetwork" {
   depends_on = [google_compute_network.wg_network]
 }
 resource "google_compute_subnetwork" "private_subnetwork" {
-  #provider      = google-beta
+  provider      = google-beta
 
   name          = "private-subnetwork"
   ip_cidr_range = var.private_cidr_block
   region        = var.region
   network       = google_compute_network.wg_network.name
-  #purpose       = "PRIVATE"
+  purpose       = "PRIVATE"
 
   depends_on = [google_compute_network.wg_network]
 }

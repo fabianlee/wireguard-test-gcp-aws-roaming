@@ -29,3 +29,13 @@ provider "google" {
       zone        = var.zone
 }
 
+provider "google-beta" {
+      # do not need json key if working using: gcloud auth application-default login
+      credentials = file("${path.module}/tf-creator.json")
+
+      project     = var.project
+      region      = var.region
+      zone        = var.zone
+}
+
+

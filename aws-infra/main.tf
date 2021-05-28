@@ -63,6 +63,15 @@ resource "aws_instance" "wgserver" {
   depends_on = [ aws_internet_gateway.my_gateway ]
 }
 
+
+data "template_file" "default" {
+  template = file("${path.module}/startup.sh")
+  vars = {
+    foo = "bar"
+  }
+}
+
+
 # private apache web server
 resource "aws_instance" "web" {
   #name = not supported
@@ -78,12 +87,19 @@ resource "aws_instance" "web" {
 
   vpc_security_group_ids = [ aws_security_group.web_sg.id ]
 
+  # coming from template
+  user_data = data.template_file.default.rendered
+
+  # directly from file
+  #user_data = file("${path.module}/startup.sh")
+
   # example of inline startup script
   # https://dev.to/liptanbiswas/how-to-put-variable-in-terraform-start-up-script-2i64
-  user_data = <<EOF
-#!/bin/bash
-echo test user_data | sudo tee /tmp/user_data.log
-EOF
+#  user_data = <<-EOF
+#    #!/bin/bash
+#    echo test user_data | sudo tee /tmp/user_data.log
+#    curl http://169.254.169.254/latest/meta-data/local-ipv4 | sudo tee -a  /tmp/user_data.log
+#  EOF
 
   tags = {
     Name = "aws-ubuntu-priv-web"

@@ -1,6 +1,6 @@
 THISDIR := $(notdir $(CURDIR))
 PROJECT := $(THISDIR)
-TF := terraform14
+TF := terraform
 
 ## have terraform create infrastructure
 apply: create-keypair serviceaccount-prereq

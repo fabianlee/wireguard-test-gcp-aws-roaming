@@ -1,0 +1,81 @@
+---
+
+- name: install qrencode package
+  apt:
+    pkg:
+    - qrencode
+    state: present
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: make wireguard client directory
+  file:
+    path: /etc/wireguard/clients
+    state: directory
+    mode: '0766'
+
+- name: generate wireguard mobile client public and private key
+  shell:
+    cmd: wg genkey | tee mobile.key | wg pubkey | tee mobile.pub
+    chdir: /etc/wireguard/clients
+    creates: /etc/wireguard/clients/mobile.key
+  register: command_result
+- debug: msg="{{command_result.stdout_lines}}"
+
+- name: slurt mobile private key
+  slurp:
+    src: /etc/wireguard/clients/mobile.key
+  register: myprivatekey
+- name: slurt mobile public key
+  slurp:
+    src: /etc/wireguard/clients/mobile.pub
+  register: mypublickey
+- name: slurt wireguard server public key
+  slurp:
+    src: /home/ubuntu/publickey
+  register: wgserverpublickey
+
+- name: mobile public wg key
+  set_fact:
+    mobile_publickey: "{{mypublickey.content | b64decode}}"
+- name: mobile private wg key
+  set_fact:
+    mobile_privatekey: "{{myprivatekey.content | b64decode}}"
+- name: wireguard server public key
+  set_fact:
+    wg_publickey: "{{wgserverpublickey.content | b64decode}}"
+
+- name: create wg0.conf for mobile client
+  template:
+    src: wg0.conf
+    dest: /etc/wireguard/clients/wg0.conf
+    mode: '0666'
+
+- name: create ansii qr code
+  command: qrencode -t ansiutf8 -r /etc/wireguard/clients/wg0.conf -o /tmp/wg-client.utf8
+- name: fetch qr code locally to /tmp/wg-client.utf8
+  fetch:
+    src: /tmp/wg-client.utf8
+    dest: /tmp/
+    flat: yes
+
+#
+# Decided against publishing the qrcode on the apache server
+# because no matter how many warnings I add, this will still end up being
+# used
+#
+#- name: create qr code svg image
+#  command: qrencode -t svg -r /etc/wireguard/clients/wg0.conf -o /var/www/html/qrmobile.svg
+#  register: command_result
+#- debug: msg="{{command_result.stdout_lines}}"
+#
+#- name: html page for mobile client
+#  copy:
+#    dest: /var/www/html/mobile-UNSAFE.html
+#    mode: '0666'
+#    content: |
+#      <pre>
+#      mobile public key: {{mobile_publickey}}
+#      wireguard server public key: {{wg_publickey}}
+#      <img src='qrmobile.svg'/> 
+#      </pre>
+#

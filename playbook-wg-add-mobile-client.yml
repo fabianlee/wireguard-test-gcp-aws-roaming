@@ -1,0 +1,13 @@
+---
+
+- hosts: wgserver
+  gather_facts: yes
+  become: yes
+
+  vars:
+    wireguard_cidr: 10.0.14.0/24
+    wireguard_public_endpoint: 199.99.99.99:51820
+    mobile_wireguard_address: 10.0.14.8/24
+
+  roles:
+    - wg-add-mobile-client

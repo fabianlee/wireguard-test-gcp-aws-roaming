@@ -1,12 +1,8 @@
 ---
 
-- hosts: all
-  gather_facts: yes
+- hosts: localhost
+  gather_facts: no
   become: yes
-
-  # most vars are coming from 'group_vars/' directory
-  vars:
-    wireguard_cidr: 10.0.14.0/24
 
   tasks:
 
@@ -17,6 +13,15 @@
         pkg:
         - python-netaddr # for ipaddr jinja2 filter used below
         state: present
+
+
+- hosts: all
+  gather_facts: yes
+  become: yes
+
+  # most vars are coming from 'group_vars/' directory
+  vars:
+    wireguard_cidr: 10.0.14.0/24
 
   roles:
     - { role: prereq }

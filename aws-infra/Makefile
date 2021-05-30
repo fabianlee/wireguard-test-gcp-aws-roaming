@@ -16,7 +16,7 @@ create-keypair:
 	[ -f ~/.aws/credentials ] || { echo "ERROR, create aws config file with access key and secret at ~/.aws/credentials"; exit 1; }
 
 destroy:
-	$(TF) destroy -force -auto-approve
+	$(TF) destroy -auto-approve
 	ssh-keygen -f ~/.ssh/known_hosts -R 172.16.2.129
 	##rm terraform.tfstate*
 

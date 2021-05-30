@@ -17,10 +17,10 @@ create-keypair:
 
 destroy:
 	@echo "destroying compute instances first, which avoids errors due to timing"
-	$(TF) destroy -target google_compute_instance.web -target google_compute_instance.wgserver -force -auto-approve
+	$(TF) destroy -target google_compute_instance.web -target google_compute_instance.wgserver -auto-approve
 	@echo "waiting 60 seconds for vm instance deletion..."
 	sleep 60
-	$(TF) destroy -force -auto-approve
+	$(TF) destroy -auto-approve
 	ssh-keygen -f ~/.ssh/known_hosts -R 172.17.2.129
 	##rm terraform.tfstate*
 

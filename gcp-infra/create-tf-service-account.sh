@@ -8,6 +8,11 @@
 # sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
 #
 
+path_to_gcloud=$(which gcloud)
+if [ -z "$path_to_gcloud" ]; then
+  echo "ERROR you must have gcloud installed to use this script, https://cloud.google.com/sdk/docs/install"
+  exit 1
+fi
 
 # check if gcloud authentication exists
 gcloud projects list >/dev/null 2>&1

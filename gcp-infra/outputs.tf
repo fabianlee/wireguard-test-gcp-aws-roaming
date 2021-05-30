@@ -14,7 +14,7 @@ output "gcp-ubuntu-priv-web-private_ip" {
   value = google_compute_instance.web.network_interface.0.network_ip
 }
 
-output "gcp-nat_ip_address" {
-  value = google_compute_address.nat-ip.address
-}
+#output "gcp-nat_ip_address" {
+#  value = google_compute_address.nat-ip.address
+#}
 

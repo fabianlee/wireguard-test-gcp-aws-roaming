@@ -5,8 +5,11 @@
   become: yes
 
   vars:
+    # CIDR block of synthesized wireguard network
     wireguard_cidr: 10.0.14.0/24
+    # public IP or router exposing wireguard server
     wireguard_public_endpoint: 199.99.99.99:51820
+    # for [Interface].Address of wg0.conf, purposely /24
     mobile_wireguard_address: 10.0.14.8/24
 
   roles:

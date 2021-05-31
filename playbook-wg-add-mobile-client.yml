@@ -1,5 +1,5 @@
 # if you want to download client conf to /tmp/wg0.conf
-# ansible-playbook playbook-wg-add-mobile-client.yml --extra-vars "copy_client_wg0_conf=true"
+# ansible-playbook playbook-wg-add-mobile-client.yml --extra-vars "fetch_client_wg0_conf=true"
 ---
 
 - hosts: wgserver

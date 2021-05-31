@@ -1,3 +1,5 @@
+# if you want to download client conf to /tmp/wg0.conf
+# ansible-playbook playbook-wg-add-mobile-client.yml --extra-vars "copy_client_wg0_conf=true"
 ---
 
 - hosts: wgserver
@@ -11,6 +13,11 @@
     wireguard_public_endpoint: 199.99.99.99:51820
     # for [Interface].Address of wg0.conf, purposely /24
     mobile_wireguard_address: 10.0.14.8/24
+
+    # fetch wireguard mobile client qrcode to /tmp/wg-client.utf8
+    fetch_client_wg0_qrcode: true
+    # fetch wireguard mobile client conf to /tmp/wg0.conf
+    fetch_client_wg0_conf: false
 
   roles:
     - wg-add-mobile-client

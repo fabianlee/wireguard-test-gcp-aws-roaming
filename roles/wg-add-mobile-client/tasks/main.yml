@@ -57,11 +57,19 @@
 
 - name: create ansii qr code
   command: qrencode -t ansiutf8 -r /etc/wireguard/clients/wg0.conf -o /tmp/wg-client.utf8
-- name: fetch qr code locally to /tmp/wg-client.utf8
+- name: fetch qr code locally to /tmp/wg-client.utf8, only if requested
   fetch:
     src: /tmp/wg-client.utf8
     dest: /tmp/
     flat: yes
+  when: fetch_client_wg0_qrcode|bool
+
+- name: fetch wireguard client wg0.conf, only if requested
+  fetch:
+    src: /etc/wireguard/clients/wg0.conf
+    dest: /tmp/
+    flat: yes
+  when: fetch_client_wg0_conf|bool
 
 #
 # Decided against publishing the qrcode on the apache server

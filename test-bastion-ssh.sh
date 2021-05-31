@@ -6,11 +6,25 @@
 # ssh through bastion with '-J'
 #
 
+# site test sends pre-canned commands to each host
+# instead of interactive ssh
+siteTestFlag="$1"
+if [ "--site2site" == "$siteTestFlag" ]; then
+  site_test=1
+else
+  site_test=0
+fi
+echo "site_test = $site_test"
+
 
 function showMenu() {
   echo ""
   echo ""
-  echo "== SSH TO =="
+  if [ $site_test -eq 0 ]; then
+    echo "== SSH TO =="
+  else
+    echo "== SITE TEST =="
+  fi
   echo ""
   echo "1) aws bastion instance $aws_bastion"
   echo "2) aws private instance 172.16.2.129"
@@ -90,6 +104,10 @@ make_ssh_config "$aws_bastion" "$gcp_bastion"
 echo "=================="
 cat ~/.ssh/config
 
+curl_options="--fail --connect-timeout 3 --retry 0 -sS"
+curl_all_aws="curl $curl_options http://172.16.1.10; curl $curl_options http://172.16.2.129"
+curl_all_gcp="curl $curl_options http://172.17.1.10; curl $curl_options http://172.17.2.129"
+
 answer=""
 while [ 1==1 ]; do
 
@@ -99,16 +117,32 @@ while [ 1==1 ]; do
 
   case $answer in
     1) 
-      ssh ubuntu@${aws_bastion}
+      if [ $site_test -eq 0 ]; then
+        ssh ubuntu@${aws_bastion}
+      else
+        ssh ubuntu@${aws_bastion} "$curl_all_aws ; $curl_all_gcp"
+      fi
       ;;
     2) 
-      ssh -J ubuntu@${aws_bastion}:22 ubuntu@172.16.2.129 -vvv
+      if [ $site_test -eq 0 ]; then
+        ssh -J ubuntu@${aws_bastion}:22 ubuntu@172.16.2.129 -vvv
+      else
+        ssh -J ubuntu@${aws_bastion}:22 ubuntu@172.16.2.129 "$curl_all_aws ; $curl_all_gcp"
+      fi
       ;;
     3) 
-      ssh ubuntu@${gcp_bastion}
+      if [ $site_test -eq 0 ]; then
+        ssh ubuntu@${gcp_bastion}
+      else
+        ssh ubuntu@${gcp_bastion} "$curl_all_gcp ; $curl_all_aws"
+      fi
       ;;
     4) 
-      ssh -J ubuntu@${gcp_bastion}:22 ubuntu@172.17.2.129 -vvv
+      if [ $site_test -eq 0 ]; then
+        ssh -J ubuntu@${gcp_bastion}:22 ubuntu@172.17.2.129 -vvv
+      else
+        ssh -J ubuntu@${gcp_bastion}:22 ubuntu@172.17.2.129 "$curl_all_gcp ; $curl_all_aws"
+      fi
       ;;
     q|quit|0)
       echo "QUITTING"

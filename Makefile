@@ -43,6 +43,10 @@ test-ansible:
 test-ssh:
 	./test-bastion-ssh.sh
 
+## uses curl to validate VPN site-to-site connectivity
+test-site-to-site:
+	./test-bastion-ssh.sh --site2site
+
 ## installs wireguard and apache across public and private vms on gcp and aws
 ansible-run:
 	ansible-playbook playbook-wireguard.yml

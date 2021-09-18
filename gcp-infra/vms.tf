@@ -56,6 +56,12 @@ resource "google_compute_instance" "wgserver" {
     }
   }
 
+  service_account {
+    # leaving empty means default compute engine service account will be used
+    #email = ""
+    scopes = ["cloud-platform"]
+  }
+
 
   // Apply the firewall rule to allow external IPs to access this instance
   tags = ["wg-server"]

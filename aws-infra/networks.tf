@@ -37,7 +37,8 @@ resource "aws_internet_gateway" "my_gateway" {
 }
 
 resource "aws_eip" "nat_eip" {
-  vpc        = true
+  domain     = "vpc" // vpc=true is deprecated
+
   depends_on = [aws_internet_gateway.my_gateway]
 }
 resource "aws_nat_gateway" "nat" {
@@ -104,13 +105,15 @@ resource "aws_route" "wireguard_route" {
   # routes wireguard CIDR to public wireguard instance for forwarding
   # actually links to network interface if you look at aws routing table
   destination_cidr_block = var.wireguard_cidr
-  instance_id = aws_instance.wgserver.id
+
+  network_interface_id = aws_instance.web.primary_network_interface_id
 }
 resource "aws_route" "othervpc_route" {
   route_table_id = aws_route_table.private_routetable.id
   # routes other VPC to public wireguard instance for forwarding
   destination_cidr_block = var.other_vpc_cidr
-  instance_id = aws_instance.wgserver.id
+
+  network_interface_id = aws_instance.wgserver.primary_network_interface_id
 }
 resource "aws_route_table_association" "private_routetable_assoc" {
   subnet_id = aws_subnet.private_subnet.id

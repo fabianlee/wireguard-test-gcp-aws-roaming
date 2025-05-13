@@ -1,3 +1,8 @@
+locals {
+  template_data = templatefile("${path.module}/startup.sh",{
+    foo = "bar"
+  })
+}
 
 resource "aws_key_pair" "my_keypair" {
   key_name   = var.aws_region
@@ -63,13 +68,14 @@ resource "aws_instance" "wgserver" {
   depends_on = [ aws_internet_gateway.my_gateway ]
 }
 
-
+/*
 data "template_file" "default" {
   template = file("${path.module}/startup.sh")
   vars = {
     foo = "bar"
   }
 }
+*/
 
 
 # private apache web server
@@ -88,7 +94,8 @@ resource "aws_instance" "web" {
   vpc_security_group_ids = [ aws_security_group.web_sg.id ]
 
   # coming from template
-  user_data = data.template_file.default.rendered
+  #user_data = data.template_file.default.rendered
+  user_data = local.template_data
 
   # directly from file
   #user_data = file("${path.module}/startup.sh")

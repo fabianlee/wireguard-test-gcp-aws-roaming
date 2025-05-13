@@ -1,6 +1,8 @@
 THISDIR := $(notdir $(CURDIR))
 PROJECT := $(THISDIR)
-TF := terraform
+
+#TF := #terraform
+TF := tofu
 
 apply: init 
 	$(TF) apply -auto-approve

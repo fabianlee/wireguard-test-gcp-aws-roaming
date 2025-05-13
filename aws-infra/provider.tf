@@ -6,7 +6,7 @@ terraform {
   required_providers {
     aws = {
       source = "hashicorp/aws"
-      version = "3.40.0"
+      version = "5.97.0" # updated for May 2025
     }
   }
 }
@@ -17,7 +17,7 @@ provider "aws" {
   //secret_key = var.aws_secret_key
 
   // instead of aws access and secret keys, use file format that comes from 'aws configure'
-  shared_credentials_file = "~/.aws/credentials"
+  shared_credentials_files = ["~/.aws/credentials"]
   #profile = "default"
 
   region = var.aws_region

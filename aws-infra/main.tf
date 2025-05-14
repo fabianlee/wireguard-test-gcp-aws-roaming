@@ -38,7 +38,7 @@ resource "aws_instance" "wgserver" {
   key_name = aws_key_pair.my_keypair.key_name
 
   // static private IP
-  private_ip = cidrhost(var.subnet_cidr,10)
+  private_ip = cidrhost(var.public_subnet_cidr,10)
   // public IP for ssh
   associate_public_ip_address = true
 

@@ -9,7 +9,7 @@ resource "aws_vpc" "my_vpc" {
 resource "aws_subnet" "public_subnet" {
   #name = not supported
   vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = var.subnet_cidr
+  cidr_block        = var.public_subnet_cidr
 
   tags = {
     Name = "subnet_public"

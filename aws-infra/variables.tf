@@ -1,6 +1,6 @@
 // variables that MUST be overridden
 variable "vpc_cidr" { }
-variable "subnet_cidr" { }
+variable "public_subnet_cidr" { }
 variable "private_subnet_cidr" { }
 variable "aws_region" { }
 variable "other_vpc_cidr" { }
